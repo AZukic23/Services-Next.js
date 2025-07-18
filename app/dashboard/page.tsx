@@ -1,26 +1,42 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Sidebar } from '../components/Sidebar';
-import { ManagedImage } from '../components/ManagedImage';
+import MitarbeiterTab from '../components/MitarbeiterTab';
+import KundenTab from '../components/KundenTab';
+import LeistungenTab from '../components/LeistungenTab';
+import ManagedTab from '../components/ManagedTab';
+import WelcomeTab from "../components/WelcomeTab";
 
 export default function DashboardPage() {
-    const [username, setUsername] = useState('');
+    // Tab auslesen (default: mitarbeiter)
+    const searchParams = useSearchParams();
+    const tab = searchParams.get('tab') || 'home';
 
-    useEffect(() => {
-        // Username aus LocalStorage holen (wurde beim Login gespeichert)
-        const storedUser = localStorage.getItem('username');
-        setUsername(storedUser || '');
-    }, []);
+    function renderTab() {
+        switch (tab) {
+            case 'home':
+                return <WelcomeTab />;
+            case 'mitarbeiter':
+                return <MitarbeiterTab />;
+            case 'kunden':
+                return <KundenTab />;
+            case 'leistungen':
+                return <LeistungenTab />;
+            case 'managed':
+                return <ManagedTab />;
+            default:
+                return <WelcomeTab />;
+        }
+    }
 
     return (
-        <div className="flex min-h-screen bg-white">
+        <div className="flex min-h-screen bg-gray-50">
+            {/* Sidebar mit Logo */}
             <Sidebar />
+            {/* Hauptbereich */}
             <main className="flex-1 p-10 flex flex-col items-center">
-                <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
-                    Willkommen, <span className="text-lime-700">{username}</span>!
-                </h2>
-                <ManagedImage />
+                {renderTab()}
             </main>
         </div>
     );

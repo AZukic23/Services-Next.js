@@ -11,7 +11,10 @@ const navItems = [
 export function Sidebar() {
     return (
         <aside className="bg-gray-900 text-white w-60 h-screen flex flex-col items-center py-6">
-            <Image src="/logo.svg" width={120} height={60} alt="Logo" className="mb-8" />
+            {/* Logo als Link zum Dashboard */}
+            <Link href="/dashboard" className="mb-8">
+                <Image src="/logo.svg" width={120} height={60} alt="Logo" />
+            </Link>
             <nav className="flex flex-col gap-4 w-full px-4">
                 {navItems.map(item => (
                     <Link

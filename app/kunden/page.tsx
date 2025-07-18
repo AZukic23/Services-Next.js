@@ -1,17 +1,34 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, FormEvent } from 'react';
+
+// TypeScript-Typen entsprechend deinem Prisma-Schema!
+type KundeService = {
+    id: number;
+    service: {
+        id: number;
+        name: string;
+        version: string;
+    };
+};
+
+type Kunde = {
+    id: number;
+    name: string;
+    services: KundeService[];
+};
 
 export default function KundenPage() {
-    const [kunden, setKunden] = useState([]);
+    const [kunden, setKunden] = useState<Kunde[]>([]);
     const [newName, setNewName] = useState('');
     const [loading, setLoading] = useState(false);
 
+    // Kunden aus API laden
     async function fetchKunden() {
         setLoading(true);
         const res = await fetch('/api/kunden');
         const data = await res.json();
-        setKunden(data.kunden);
+        setKunden(data.kunden as Kunde[]);
         setLoading(false);
     }
 
@@ -19,9 +36,10 @@ export default function KundenPage() {
         fetchKunden();
     }, []);
 
-    async function handleCreate(e) {
+    // Neuen Kunden anlegen
+    async function handleCreate(e: FormEvent) {
         e.preventDefault();
-        if (!newName) return;
+        if (!newName.trim()) return;
 
         await fetch('/api/kunden/create', {
             method: 'POST',
@@ -33,7 +51,7 @@ export default function KundenPage() {
     }
 
     return (
-        <div className="p-10">
+        <div className="p-10 text-black">
             <h1 className="text-2xl font-bold mb-6">Kunden</h1>
             <form onSubmit={handleCreate} className="mb-6 flex gap-2">
                 <input
