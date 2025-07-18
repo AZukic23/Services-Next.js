@@ -1,6 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { Sidebar } from '../components/Sidebar';
 import MitarbeiterTab from '../components/MitarbeiterTab';
 import KundenTab from '../components/KundenTab';
@@ -10,13 +11,20 @@ import WelcomeTab from "../components/WelcomeTab";
 
 export default function DashboardPage() {
     // Tab auslesen (default: mitarbeiter)
+    const [username, setUsername] = useState('');
     const searchParams = useSearchParams();
     const tab = searchParams.get('tab') || 'home';
+
+    useEffect(() => {
+        fetch('/api/user')
+            .then(res => res.json())
+            .then(data => setUsername(data.username || ''));
+    }, []);
 
     function renderTab() {
         switch (tab) {
             case 'home':
-                return <WelcomeTab />;
+                return <WelcomeTab username={username} />;
             case 'mitarbeiter':
                 return <MitarbeiterTab />;
             case 'kunden':
@@ -26,7 +34,7 @@ export default function DashboardPage() {
             case 'managed':
                 return <ManagedTab />;
             default:
-                return <WelcomeTab />;
+                return <WelcomeTab username={username} />;
         }
     }
 
