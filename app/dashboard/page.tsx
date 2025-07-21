@@ -10,6 +10,8 @@ import ManagedTab from '../components/ManagedTab';
 import WelcomeTab from "../components/WelcomeTab";
 import {ManagedServicesTable} from "../components/ManagedServicesTable";
 import {ManagedServicesOverview} from "../components/ManagedServicesOverview";
+import { services } from "../data/managedServices";
+import { managedServerV1Features, managedServerV1Prices } from "../data/managedServerV1";
 
 export default function DashboardPage() {
 
@@ -27,6 +29,10 @@ export default function DashboardPage() {
         name: string;
         services: ServiceAssignment[];
     };
+
+    const [selectedService, setSelectedService] = useState<string | null>(null);
+    const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
+
     // Tab auslesen (default: mitarbeiter)
     const [username, setUsername] = useState('');
     const searchParams = useSearchParams();
@@ -54,13 +60,61 @@ export default function DashboardPage() {
             case 'mitarbeiter':
                 return <MitarbeiterTab />;
             case 'kunden':
-                return <KundenTab kunden={customers} onKundenUpdate={setCustomers}  />;
+                return <KundenTab kunden={customers} onKundenUpdate={setCustomers} />;
             case 'leistungen':
                 return <LeistungenTab />;
             case 'managed':
-                return <ManagedServicesOverview services={[]} onSelect={function(key: string): void {
-                    throw new Error('Function not implemented.');
-                } }/>;
+                // Managed Server ist ausgewählt und Version 1.0 ist gewählt
+                if (selectedService === "managed-server" && selectedVersion === "1.0") {
+                    return (
+                        <>
+                            <h2 className="text-3xl font-bold mb-8 text-gray-900">Managed Server &gt; Version 1.0</h2>
+                            <ManagedServicesTable
+                                serviceName="Managed Server 1.0"
+                                features={managedServerV1Features}
+                                prices={managedServerV1Prices}
+                            />
+                            <button
+                                className="mt-6 px-4 py-2 bg-gray-200 rounded"
+                                onClick={() => setSelectedVersion(null)}
+                            >
+                                Zurück zu den Versionen
+                            </button>
+                        </>
+                    );
+                }
+                // Managed Server ist ausgewählt, aber keine Version
+                if (selectedService === "managed-server") {
+                    return (
+                        <>
+                            <h2 className="text-3xl font-bold mb-8 text-gray-900">Managed Server – Versionen</h2>
+                            <button
+                                className="px-6 py-3 bg-lime-600 text-white rounded font-semibold hover:bg-lime-700"
+                                onClick={() => setSelectedVersion("1.0")}
+                            >
+                                Version 1.0
+                            </button>
+                            <button
+                                className="mt-6 px-4 py-2 bg-gray-200 rounded"
+                                onClick={() => setSelectedService(null)}
+                            >
+                                Zurück zu allen Services
+                            </button>
+                        </>
+                    );
+                }
+                // Übersicht, kein Service ausgewählt
+                return (
+                    <>
+                        <h2 className="text-3xl font-bold mb-8 text-gray-900">Managed Services</h2>
+                        <ManagedServicesOverview
+                            services={services}
+                            onSelect={(key) => {
+                                if (key === "managed-server") setSelectedService("managed-server");
+                            }}
+                        />
+                    </>
+                );
             default:
                 return <WelcomeTab username={username} />;
         }
