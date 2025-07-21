@@ -8,7 +8,7 @@ const dummyLeistungen = [
 export default function LeistungenTab() {
     return (
         <section className="w-full max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-6 text-gray-900">Customern Leistungen</h2>
+            <h2 className="text-2xl font-bold mb-6 text-gray-900">Kunden Leistungsbeschreibungen</h2>
             <div className="flex flex-col gap-6">
                 {dummyLeistungen.map(l => (
                     <div key={l.id} className="bg-white rounded-2xl shadow-lg p-6 flex items-center gap-4 hover:shadow-xl transition">

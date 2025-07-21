@@ -8,8 +8,25 @@ import KundenTab from '../components/KundenTab';
 import LeistungenTab from '../components/LeistungenTab';
 import ManagedTab from '../components/ManagedTab';
 import WelcomeTab from "../components/WelcomeTab";
+import {ManagedServicesTable} from "../components/ManagedServicesTable";
+import {ManagedServicesOverview} from "../components/ManagedServicesOverview";
 
 export default function DashboardPage() {
+
+    type ServiceAssignment = {
+        amount: number;
+        type: string;
+        price: number;
+        service: {
+            name: string;
+            version: string;
+        };
+    };
+    type Customer = {
+        id: number;
+        name: string;
+        services: ServiceAssignment[];
+    };
     // Tab auslesen (default: mitarbeiter)
     const [username, setUsername] = useState('');
     const searchParams = useSearchParams();
@@ -20,7 +37,7 @@ export default function DashboardPage() {
             .then(res => res.json())
             .then(data => setUsername(data.username || ''));
     }, []);
-    const [customers, setCustomers] = useState([]); // <- Typisierung optional
+    const [customers, setCustomers] = useState<Customer[]>([]);
 
     useEffect(() => {
         if (tab === 'kunden') {
@@ -37,11 +54,13 @@ export default function DashboardPage() {
             case 'mitarbeiter':
                 return <MitarbeiterTab />;
             case 'kunden':
-                return <KundenTab kunden={customers} />;
+                return <KundenTab kunden={customers} onKundenUpdate={setCustomers}  />;
             case 'leistungen':
                 return <LeistungenTab />;
             case 'managed':
-                return <ManagedTab />;
+                return <ManagedServicesOverview services={[]} onSelect={function(key: string): void {
+                    throw new Error('Function not implemented.');
+                } }/>;
             default:
                 return <WelcomeTab username={username} />;
         }
