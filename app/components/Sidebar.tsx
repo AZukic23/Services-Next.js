@@ -3,8 +3,8 @@ import Link from 'next/link';
 
 const navItems = [
     { label: 'Mitarbeiter', href: '/dashboard?tab=mitarbeiter' },
-    { label: 'Kunden', href: '/dashboard?tab=kunden' },
-    { label: 'Kunden Leistungen', href: '/dashboard?tab=leistungen' },
+    { label: 'Customern', href: '/dashboard?tab=Customern' },
+    { label: 'Customern Leistungen', href: '/dashboard?tab=leistungen' },
     { label: 'Managed Services', href: '/dashboard?tab=managed' },
 ];
 

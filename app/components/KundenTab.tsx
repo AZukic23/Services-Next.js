@@ -1,22 +1,22 @@
 'use client';
 
-type Kunde = {
+type Customer = {
     id: number;
     name: string;
     services: string[];
 };
 
-const dummyKunden: Kunde[] = [
+const dummyCustomern: Customer[] = [
     { id: 1, name: "Firma Müller", services: ["Exchange", "SharePoint"] },
     { id: 2, name: "IT Solutions", services: ["Teams"] },
 ];
 
-export default function KundenTab() {
+export default function CustomernTab() {
     return (
         <section className="w-full max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-6 text-gray-900">Kunden</h2>
+            <h2 className="text-2xl font-bold mb-6 text-gray-900">Customern</h2>
             <div className="flex flex-col gap-6">
-                {dummyKunden.map(k => (
+                {dummyCustomern.map(k => (
                     <div
                         key={k.id}
                         className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 hover:shadow-xl transition"

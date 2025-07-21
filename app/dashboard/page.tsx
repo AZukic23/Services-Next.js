@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Sidebar } from '../components/Sidebar';
 import MitarbeiterTab from '../components/MitarbeiterTab';
-import KundenTab from '../components/KundenTab';
+import CustomernTab from '../components/CustomernTab';
 import LeistungenTab from '../components/LeistungenTab';
 import ManagedTab from '../components/ManagedTab';
 import WelcomeTab from "../components/WelcomeTab";
@@ -27,8 +27,8 @@ export default function DashboardPage() {
                 return <WelcomeTab username={username} />;
             case 'mitarbeiter':
                 return <MitarbeiterTab />;
-            case 'kunden':
-                return <KundenTab />;
+            case 'Customern':
+                return <CustomernTab />;
             case 'leistungen':
                 return <LeistungenTab />;
             case 'managed':
