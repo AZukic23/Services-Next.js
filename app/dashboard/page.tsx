@@ -16,7 +16,7 @@ export default function DashboardPage() {
     const tab = searchParams.get('tab') || 'home';
 
     useEffect(() => {
-        fetch('/api/user')
+        fetch('/api/user', { credentials: 'include' }) // <--- wichtig!
             .then(res => res.json())
             .then(data => setUsername(data.username || ''));
     }, []);
