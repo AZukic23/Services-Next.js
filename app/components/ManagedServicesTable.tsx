@@ -4,7 +4,7 @@ type Edition = "Bronze" | "Silber" | "Gold";
 
 interface Feature {
     name: string;
-    editions: { [key in Edition]?: string | boolean };
+    editions: { [key in Edition]?: string | boolean | { check?: boolean; label?: string } };
 }
 
 interface PriceRow {
@@ -38,11 +38,24 @@ export const ManagedServicesTable: React.FC<ManagedServiceTableProps> = ({
 
 
     const editions: Edition[] = ["Bronze", "Silber", "Gold"];
-    const renderCell = (value: string | boolean | undefined) => {
+    const renderCell = (
+        value: string | boolean | { check?: boolean; label?: string } | undefined
+    ) => {
         if (typeof value === "boolean") {
             return value ? "✔️" : "";
         }
-        return value || "";
+        if (typeof value === "string") {
+            return value;
+        }
+        if (typeof value === "object" && value !== null) {
+            return (
+                <>
+                    {value.check ? "✔️ " : ""}
+                    {value.label}
+                </>
+            );
+        }
+        return "";
     };
 
     return (
@@ -74,6 +87,7 @@ export const ManagedServicesTable: React.FC<ManagedServiceTableProps> = ({
                 <table className="w-full border-collapse">
                     <thead>
                     <tr>
+                        <th className="bg-gray-100 text-[#18181b] p-3 text-left font-bold w-10">#</th>
                         <th className="bg-gray-100 text-[#18181b] p-3 text-left font-bold">Leistungsmerkmal</th>
                         {editions.map((edition) => (
                             <th
@@ -88,6 +102,7 @@ export const ManagedServicesTable: React.FC<ManagedServiceTableProps> = ({
                     <tbody>
                     {features.map((feature, idx) => (
                         <tr key={idx} className="border-b">
+                            <td className="text-center text-[#18181b] p-3">{idx + 1}</td>
                             <td className="p-3 text-[#18181b]">{feature.name}</td>
                             {editions.map((ed) => (
                                 <td key={ed} className="text-center text-[#18181b] p-3">
@@ -98,6 +113,7 @@ export const ManagedServicesTable: React.FC<ManagedServiceTableProps> = ({
                     ))}
                     {prices.map((row, idx) => (
                         <tr key={`price-${idx}`} className="border-t">
+                            <td className="p-3" /> {/* Platzhalter für Nummerierungsspalte */}
                             <td className="p-3 font-bold text-[#18181b]">{row.label}</td>
                             {editions.map((ed) => (
                                 <td key={ed} className="text-center font-bold text-[#18181b] p-3">

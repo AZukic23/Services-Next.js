@@ -75,7 +75,7 @@ export default function DashboardPage() {
                                 prices={managedServerV1Prices}
                             />
                             <button
-                                className="mt-6 px-4 py-2 bg-gray-200 rounded"
+                                className="mt-6 px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded font-semibold shadow"
                                 onClick={() => setSelectedVersion(null)}
                             >
                                 Zurück zu den Versionen
@@ -95,7 +95,7 @@ export default function DashboardPage() {
                                 Version 1.0
                             </button>
                             <button
-                                className="mt-6 px-4 py-2 bg-gray-200 rounded"
+                                className="mt-6 px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded font-semibold shadow"
                                 onClick={() => setSelectedService(null)}
                             >
                                 Zurück zu allen Services
