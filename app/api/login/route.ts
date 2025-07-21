@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../lib/prisma';
 import bcrypt from 'bcryptjs';
 
-const prisma = new PrismaClient();
-
+// @deprecated This route is obsolete. Use NextAuth signIn instead.
 export async function POST(request: Request) {
     const { username, password } = await request.json();
 
