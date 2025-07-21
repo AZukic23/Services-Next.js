@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { signIn } from 'next-auth/react'; // <--- NEU
 
 export default function LoginPage() {
     const router = useRouter();
@@ -12,19 +13,17 @@ export default function LoginPage() {
     async function handleLogin(e: { preventDefault: () => void; }) {
         e.preventDefault();
 
-        const res = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: user, password: pass }),
+        // NEU: NextAuth statt eigene API
+        const result = await signIn('credentials', {
+            redirect: false,
+            username: user,
+            password: pass,
         });
 
-        const data = await res.json();
-        if (data.success) {
-            // Username im LocalStorage speichern!
-            localStorage.setItem('username', user);
+        if (result && result.ok) {
             router.push('/dashboard');
         } else {
-            setError(data.error || 'Login fehlgeschlagen!');
+            setError('Login fehlgeschlagen!');
         }
     }
 

@@ -1,92 +1,83 @@
-'use client';
+"use client";
+import { useEffect, useState } from "react";
 
-import { useEffect, useState, FormEvent } from 'react';
-
-// TypeScript-Typen entsprechend deinem Prisma-Schema!
-type KundeService = {
-    id: number;
+type ServiceAssignment = {
+    amount: number;
+    type: string;
+    price: number;
     service: {
-        id: number;
         name: string;
         version: string;
     };
 };
 
-type Kunde = {
+type Customer = {
     id: number;
     name: string;
-    services: KundeService[];
+    services: ServiceAssignment[];
 };
 
-export default function KundenPage() {
-    const [kunden, setKunden] = useState<Kunde[]>([]);
-    const [newName, setNewName] = useState('');
-    const [loading, setLoading] = useState(false);
-
-    // Kunden aus API laden
-    async function fetchKunden() {
-        setLoading(true);
-        const res = await fetch('/api/kunden');
-        const data = await res.json();
-        setKunden(data.kunden as Kunde[]);
-        setLoading(false);
-    }
+export default function CustomersPage() {
+    const [customers, setCustomers] = useState<Customer[]>([]);
 
     useEffect(() => {
-        fetchKunden();
+        fetch("/api/kunden")
+            .then((res) => res.json())
+            .then(setCustomers);
     }, []);
 
-    // Neuen Kunden anlegen
-    async function handleCreate(e: FormEvent) {
-        e.preventDefault();
-        if (!newName.trim()) return;
-
-        await fetch('/api/kunden/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: newName }),
-        });
-        setNewName('');
-        fetchKunden();
-    }
-
     return (
-        <div className="p-10 text-black">
-            <h1 className="text-2xl font-bold mb-6">Kunden</h1>
-            <form onSubmit={handleCreate} className="mb-6 flex gap-2">
-                <input
-                    type="text"
-                    placeholder="Neuer Kunde"
-                    value={newName}
-                    onChange={e => setNewName(e.target.value)}
-                    className="border p-2 rounded"
-                />
-                <button type="submit" className="bg-lime-600 text-white px-4 py-2 rounded">Erstellen</button>
-            </form>
-            {loading ? (
-                <div>Lade Kunden...</div>
-            ) : kunden.length === 0 ? (
-                <div>Keine Kunden vorhanden.</div>
-            ) : (
-                <ul>
-                    {kunden.map(k => (
-                        <li key={k.id} className="mb-4 border-b pb-2">
-                            <strong>{k.name}</strong>
-                            <ul className="ml-4">
-                                {k.services.length === 0 ? (
-                                    <li>Keine Services.</li>
-                                ) : (
-                                    k.services.map(s => (
-                                        <li key={s.id}>
-                                            {s.service.name} (Version: {s.service.version})
-                                        </li>
-                                    ))
-                                )}
-                            </ul>
-                        </li>
-                    ))}
-                </ul>
-            )}
+        <div className="flex min-h-screen bg-gray-50">
+            {/* Sidebar */}
+            <aside className="w-64 bg-white border-r px-6 py-8">
+                <h2 className="text-2xl font-bold mb-10">IT Works</h2>
+                <nav>
+                    <div className="text-lg font-semibold mb-4 text-lime-700">Kunden</div>
+                </nav>
+            </aside>
+            {/* Main Content */}
+            <main className="flex-1 p-10">
+                <div className="flex justify-between items-center mb-8">
+                    <div className="text-xl font-semibold">Kunden anlegen:</div>
+                    <button className="border-2 border-gray-900 rounded-lg px-8 py-2 font-bold hover:bg-lime-100">
+                        anlegen
+                    </button>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="min-w-full border-separate rounded-2xl border border-gray-900" style={{ borderSpacing: 0 }}>
+                        <thead>
+                        <tr>
+                            <th className="border-b-2 border-gray-900 px-6 py-4 text-left">Kundenname</th>
+                            <th className="border-b-2 border-gray-900 px-6 py-4 text-left">Services</th>
+                            <th className="border-b-2 border-gray-900 px-6 py-4 text-left">Version</th>
+                            <th className="border-b-2 border-gray-900 px-6 py-4 text-left">Preis</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {customers.map((kunde) => (
+                            <tr key={kunde.id}>
+                                <td className="border-b border-gray-900 px-6 py-4">{kunde.name}</td>
+                                <td className="border-b border-gray-900 px-6 py-4">
+                                    {kunde.services.map((s, i) => (
+                                        <div key={i}>{s.amount}x {s.service.name} {s.type}</div>
+                                    ))}
+                                </td>
+                                <td className="border-b border-gray-900 px-6 py-4">
+                                    {kunde.services.map((s, i) => (
+                                        <div key={i}>{s.service.name} {s.service.version}</div>
+                                    ))}
+                                </td>
+                                <td className="border-b border-gray-900 px-6 py-4">
+                                    {kunde.services.map((s, i) => (
+                                        <div key={i}>{s.price}€ monatlich</div>
+                                    ))}
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+            </main>
         </div>
     );
 }

@@ -1,17 +1,17 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
+import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function GET() {
-    const kunden = await prisma.kunde.findMany({
+    // Holt alle Kunden inkl. deren zugewiesener Services
+    const customers = await prisma.Customer.findMany({
         include: {
             services: {
                 include: {
-                    service: true
-                }
-            }
-        }
+                    service: true,
+                },
+            },
+        },
     });
-    return NextResponse.json({ kunden });
+    return NextResponse.json(customers);
 }

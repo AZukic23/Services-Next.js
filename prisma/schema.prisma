@@ -13,23 +13,26 @@ model User {
   password String
 }
 
-model Kunde {
-  id         Int       @id @default(autoincrement())
-  name       String
-  services   KundeService[]
+model Customer {
+  id        Int                 @id @default(autoincrement())
+  name      String
+  services  CustomerService[]
 }
 
 model Service {
-  id       Int       @id @default(autoincrement())
-  name     String
-  version  String
-  kunden   KundeService[]
+  id        Int                @id @default(autoincrement())
+  name      String
+  version   String             // z.B. "v1.0", "v3.0"
+  assignments CustomerService[]
 }
 
-model KundeService {
-  id        Int      @id @default(autoincrement())
-  kunde     Kunde    @relation(fields: [kundeId], references: [id])
-  kundeId   Int
-  service   Service  @relation(fields: [serviceId], references: [id])
-  serviceId Int
+model CustomerService {
+  id         Int      @id @default(autoincrement())
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId Int
+  service    Service  @relation(fields: [serviceId], references: [id])
+  serviceId  Int
+  amount     Int
+  type       String   // z.B. "Gold", "Silver"
+  price      Int      // z.B. 290 (monatlich, in EUR)
 }

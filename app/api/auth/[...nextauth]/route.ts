@@ -1,6 +1,7 @@
 import NextAuth, {AuthOptions, SessionStrategy} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 export const authOptions = {
@@ -12,11 +13,11 @@ export const authOptions = {
                 password: { label: "Passwort", type: "password" }
             },
             async authorize(credentials) {
-                if (!credentials) return null; // <-- Sicherstellen, dass credentials existiert
+                if (!credentials) return null;
                 const user = await prisma.user.findUnique({
                     where: { username: credentials.username }
                 });
-                if (user && credentials.password === user.password) {
+                if (user && bcrypt.compareSync(credentials.password, user.password)) {
                     return { id: String(user.id), name: user.username };
                 }
                 return null;
