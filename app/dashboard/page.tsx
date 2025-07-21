@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Sidebar } from '../components/Sidebar';
 import MitarbeiterTab from '../components/MitarbeiterTab';
-import CustomernTab from '../components/CustomernTab';
+import KundenTab from '../components/KundenTab';
 import LeistungenTab from '../components/LeistungenTab';
 import ManagedTab from '../components/ManagedTab';
 import WelcomeTab from "../components/WelcomeTab";
@@ -20,6 +20,15 @@ export default function DashboardPage() {
             .then(res => res.json())
             .then(data => setUsername(data.username || ''));
     }, []);
+    const [customers, setCustomers] = useState([]); // <- Typisierung optional
+
+    useEffect(() => {
+        if (tab === 'kunden') {
+            fetch('/api/kunden')
+                .then(res => res.json())
+                .then(data => setCustomers(data));
+        }
+    }, [tab]);
 
     function renderTab() {
         switch (tab) {
@@ -27,8 +36,8 @@ export default function DashboardPage() {
                 return <WelcomeTab username={username} />;
             case 'mitarbeiter':
                 return <MitarbeiterTab />;
-            case 'Customern':
-                return <CustomernTab />;
+            case 'kunden':
+                return <KundenTab kunden={customers} />;
             case 'leistungen':
                 return <LeistungenTab />;
             case 'managed':

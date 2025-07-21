@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "../../lib/prisma";
 
 export async function GET() {
-    // Holt alle Customern inkl. deren zugewiesener Services
-    const customers = await prisma.Customer.findMany({
+    const customers = await prisma.customer.findMany({
         include: {
             services: {
                 include: {

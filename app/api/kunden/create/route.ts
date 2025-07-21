@@ -5,6 +5,6 @@ const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
     const { name } = await request.json();
-    const Customer = await prisma.Customer.create({ data: { name } });
+    const Customer = await prisma.customer.create({ data: { name } });
     return NextResponse.json({ Customer });
 }

@@ -1,48 +1,58 @@
-'use client';
+type ServiceAssignment = {
+    amount: number;
+    type: string;
+    price: number;
+    service: {
+        name: string;
+        version: string;
+    };
+};
 
 type Customer = {
     id: number;
     name: string;
-    services: string[];
+    services: ServiceAssignment[];
 };
 
-const dummyCustomern: Customer[] = [
-    { id: 1, name: "Firma Müller", services: ["Exchange", "SharePoint"] },
-    { id: 2, name: "IT Solutions", services: ["Teams"] },
-];
+type KundenTabProps = {
+    kunden: Customer[];
+};
 
-export default function CustomernTab() {
+export default function KundenTab({ kunden }: KundenTabProps) {
     return (
-        <section className="w-full max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-6 text-gray-900">Customern</h2>
-            <div className="flex flex-col gap-6">
-                {dummyCustomern.map(k => (
-                    <div
-                        key={k.id}
-                        className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 hover:shadow-xl transition"
-                    >
-                        <div className="flex items-center justify-between">
-                            <strong className="text-xl text-gray-800">{k.name}</strong>
-                            <span className="text-xs px-2 py-1 bg-lime-100 text-lime-700 rounded-full">
-                {k.services.length} Service{(k.services.length !== 1) ? 's' : ''}
-              </span>
-                        </div>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                            {k.services.length === 0
-                                ? <span className="text-gray-400 italic">Keine Services</span>
-                                : k.services.map((s, idx) => (
-                                    <span
-                                        key={idx}
-                                        className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm"
-                                    >
-                    {s}
-                  </span>
-                                ))
-                            }
-                        </div>
-                    </div>
+        <div className="overflow-x-auto">
+            <table className="min-w-full border-separate rounded-2xl border border-gray-900" style={{ borderSpacing: 0 }}>
+                <thead>
+                <tr>
+                    <th className="border-b-2 border-gray-900 px-6 py-4 text-left">Kundenname</th>
+                    <th className="border-b-2 border-gray-900 px-6 py-4 text-left">Services</th>
+                    <th className="border-b-2 border-gray-900 px-6 py-4 text-left">Version</th>
+                    <th className="border-b-2 border-gray-900 px-6 py-4 text-left">Preis</th>
+                </tr>
+                </thead>
+                <tbody>
+                {kunden.map((kunde) => (
+                    <tr key={kunde.id}>
+                        <td className="border-b border-gray-900 px-6 py-4">{kunde.name}</td>
+                        <td className="border-b border-gray-900 px-6 py-4">
+                            {kunde.services.map((s, i) => (
+                                <div key={i}>{s.amount}x {s.service.name} {s.type}</div>
+                            ))}
+                        </td>
+                        <td className="border-b border-gray-900 px-6 py-4">
+                            {kunde.services.map((s, i) => (
+                                <div key={i}>{s.service.name} {s.service.version}</div>
+                            ))}
+                        </td>
+                        <td className="border-b border-gray-900 px-6 py-4">
+                            {kunde.services.map((s, i) => (
+                                <div key={i}>{s.price}€ monatlich</div>
+                            ))}
+                        </td>
+                    </tr>
                 ))}
-            </div>
-        </section>
+                </tbody>
+            </table>
+        </div>
     );
 }
