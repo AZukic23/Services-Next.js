@@ -1,4 +1,5 @@
 import React from "react";
+import { ManagedServerPackage } from "../data/managedServerV1";
 
 type Edition = "Bronze" | "Silber" | "Gold";
 
@@ -12,13 +13,12 @@ interface PriceRow {
     values: { [key in Edition]?: string };
 }
 
-interface ManagedServiceTableProps {
+interface ManagedServicesTableProps {
     serviceName: string;
-    features: Feature[];
-    prices: PriceRow[];
+    packages: ManagedServerPackage[];
     onBack?: () => void;
-    onVersionSelect?: (version: string) => void; // falls Versionen als Buttons
-    versions?: string[]; // falls du mehrere Versionen hast
+    onVersionSelect?: (version: string) => void;
+    versions?: string[];
 }
 
 const editionStyles: Record<Edition, string> = {
@@ -27,35 +27,52 @@ const editionStyles: Record<Edition, string> = {
     Gold: "bg-[#ffd700] text-gray-900",
 };
 
-export const ManagedServicesTable: React.FC<ManagedServiceTableProps> = ({
-                                                                             serviceName,
-                                                                             features,
-                                                                             prices,
-                                                                             onBack,
-                                                                             onVersionSelect,
-                                                                             versions,
-                                                                         }) => {
-
-
+export const ManagedServicesTable: React.FC<ManagedServicesTableProps> = ({
+                                                                              serviceName,
+                                                                              packages,
+                                                                              onBack,
+                                                                              onVersionSelect,
+                                                                              versions,
+                                                                          }) => {
     const editions: Edition[] = ["Bronze", "Silber", "Gold"];
-    const renderCell = (
-        value: string | boolean | { check?: boolean; label?: string } | undefined
-    ) => {
-        if (typeof value === "boolean") {
-            return value ? "✔️" : "";
-        }
-        if (typeof value === "string") {
-            return value;
-        }
-        if (typeof value === "object" && value !== null) {
-            return (
-                <>
-                    {value.check ? "✔️ " : ""}
-                    {value.label}
-                </>
-            );
-        }
-        return "";
+
+    // Alle Feature-Keys (aus dem ersten Paket)
+    const featureKeys = Object.keys(packages[0].features) as (keyof typeof packages[0]['features'])[];
+
+    // Für schönere Namen ggf. Mapping (optional, sonst raw)
+    const featureNameMap: { [key: string]: string } = {
+        webServiceStatus: "Web-Zugriff auf Service-Status",
+        remoteSoftware: "Fernwartungssoftware",
+        monthlyReport: "Monatlich zusammengefasster Bericht",
+        inventory: "Inventarisierung",
+        serverHardwareProvision: "Vorhaltung Server-Hardware",
+        securityUpdates: "Installation aktueller Sicherheitsupdates",
+        vulnerabilityManagement: "Vulnerability Management",
+        managedAntivirus: "Managed Anti-Virus (Bitdefender)",
+        monitoring: "Monitoring",
+        alerting: "Alarmierungsart",
+        responseTime: "Interventionszeit (kritisch)",
+        tempCleanup: "Bereinigung temporärer Dateien / Eventlog",
+        partitionService: "Partitionsfüllstand & Partitionsservice",
+        quarterlyConsulting: "Quartalsweises Beratungsgespräch",
+        repairDevices: "Instandsetzung Devices",
+        directContact: "Direkter Ansprechpartner",
+        freeHotline: "Kostenlose Supporthotline",
+        conception: "Konzeptionsleistungen",
+        softwareIssueHandling: "Software-Problembehandlungen",
+        serviceDiscount: "Rabatt auf Dienstleistungspreise",
+    };
+
+    // Preise auslesen
+    const setupFees = Object.fromEntries(packages.map(pkg => [pkg.name, pkg.setupFee + " €"]));
+    const monthlyFees = Object.fromEntries(packages.map(pkg => [pkg.name, pkg.monthlyFee + " €"]));
+    const notes = Object.fromEntries(packages.map(pkg => [pkg.name, pkg.notes || ""]));
+
+    // Zelle hübsch machen (Check, Label, etc.)
+    const renderCell = (value: any) => {
+        if (typeof value === "boolean") return value ? "✔️" : "";
+        if (typeof value === "string") return value;
+        return value || "";
     };
 
     return (
@@ -68,7 +85,6 @@ export const ManagedServicesTable: React.FC<ManagedServiceTableProps> = ({
                     ← Zurück
                 </button>
             )}
-            {/* Falls mehrere Versionen als Buttons */}
             {versions && onVersionSelect && (
                 <div className="mb-6 flex gap-4">
                     {versions.map((version) => (
@@ -100,28 +116,49 @@ export const ManagedServicesTable: React.FC<ManagedServiceTableProps> = ({
                     </tr>
                     </thead>
                     <tbody>
-                    {features.map((feature, idx) => (
-                        <tr key={idx} className="border-b">
+                    {featureKeys.map((featureKey, idx) => (
+                        <tr key={featureKey as string} className="border-b">
                             <td className="text-center text-[#18181b] p-3">{idx + 1}</td>
-                            <td className="p-3 text-[#18181b]">{feature.name}</td>
+                            <td className="p-3 text-[#18181b]">
+                                {featureNameMap[featureKey as string] || featureKey}
+                            </td>
                             {editions.map((ed) => (
                                 <td key={ed} className="text-center text-[#18181b] p-3">
-                                    {renderCell(feature.editions[ed])}
+                                    {renderCell(packages.find(p => p.name === ed)?.features[featureKey])}
                                 </td>
                             ))}
                         </tr>
                     ))}
-                    {prices.map((row, idx) => (
-                        <tr key={`price-${idx}`} className="border-t">
-                            <td className="p-3" /> {/* Platzhalter für Nummerierungsspalte */}
-                            <td className="p-3 font-bold text-[#18181b]">{row.label}</td>
+                    <tr className="border-t">
+                        <td className="p-3" />
+                        <td className="p-3 font-bold text-[#18181b]">Setup-Gebühr</td>
+                        {editions.map((ed) => (
+                            <td key={ed} className="text-center font-bold text-[#18181b] p-3">
+                                {setupFees[ed]}
+                            </td>
+                        ))}
+                    </tr>
+                    <tr className="border-t">
+                        <td className="p-3" />
+                        <td className="p-3 font-bold text-[#18181b]">Monatliche Gebühr</td>
+                        {editions.map((ed) => (
+                            <td key={ed} className="text-center font-bold text-[#18181b] p-3">
+                                {monthlyFees[ed]}
+                            </td>
+                        ))}
+                    </tr>
+                    {/* Optional: Notizen (z.B. Mengenrabatt Gold) */}
+                    {Object.values(notes).some(n => n) && (
+                        <tr className="border-t">
+                            <td className="p-3" />
+                            <td className="p-3 font-bold text-[#18181b]">Hinweis</td>
                             {editions.map((ed) => (
-                                <td key={ed} className="text-center font-bold text-[#18181b] p-3">
-                                    {row.values[ed] || ""}
+                                <td key={ed} className="text-center italic text-[#666] p-3">
+                                    {notes[ed]}
                                 </td>
                             ))}
                         </tr>
-                    ))}
+                    )}
                     </tbody>
                 </table>
             </div>

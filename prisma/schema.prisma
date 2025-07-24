@@ -36,3 +36,34 @@ model CustomerService {
   type       String   // z.B. "Gold", "Silver"
   price      Int      // z.B. 290 (monatlich, in EUR)
 }
+
+model ManagedService {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  name        String
+  description String
+  packages    ManagedServerPackage[]
+  ManagedServerOption ManagedServerOption[]
+}
+
+model ManagedServerPackage {
+  id           Int      @id @default(autoincrement())
+  name         String   // Bronze, Silber, Gold
+  features     Json     // Alle Features als JSON
+  setupFee     Float
+  monthlyFee   Float
+  notes        String?
+  service      ManagedService @relation(fields: [serviceId], references: [id])
+  serviceId    Int
+}
+
+model ManagedServerOption {
+  id           Int      @id @default(autoincrement())
+  name         String
+  priceMonthly Float?
+  priceOnce    Float?
+  securityLevel String?
+  details      String?
+  service      ManagedService? @relation(fields: [serviceId], references: [id])
+  serviceId    Int?
+}

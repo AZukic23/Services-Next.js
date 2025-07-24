@@ -8,13 +8,12 @@ import KundenTab from '../components/KundenTab';
 import LeistungenTab from '../components/LeistungenTab';
 import ManagedTab from '../components/ManagedTab';
 import WelcomeTab from "../components/WelcomeTab";
-import {ManagedServicesTable} from "../components/ManagedServicesTable";
-import {ManagedServicesOverview} from "../components/ManagedServicesOverview";
-import { services } from "../data/managedServices";
-import { managedServerV1Features, managedServerV1Prices } from "../data/managedServerV1";
+import { ManagedServicesTable } from "../components/ManagedServicesTable";
+import { ManagedServicesOverview } from "../components/ManagedServicesOverview";
+import { ManagedServerOptionsTable } from "../components/ManagedServerOptionsTable";
+import { useManagedServices } from '../../hooks/useManagedServices'; // <-- NEU
 
 export default function DashboardPage() {
-
     type ServiceAssignment = {
         amount: number;
         type: string;
@@ -39,7 +38,7 @@ export default function DashboardPage() {
     const tab = searchParams.get('tab') || 'home';
 
     useEffect(() => {
-        fetch('/api/user', { credentials: 'include' }) // <--- wichtig!
+        fetch('/api/user', { credentials: 'include' })
             .then(res => res.json())
             .then(data => setUsername(data.username || ''));
     }, []);
@@ -52,6 +51,14 @@ export default function DashboardPage() {
                 .then(data => setCustomers(data));
         }
     }, [tab]);
+
+    // Managed Services aus DB holen
+    const services = useManagedServices();
+
+    // Managed Server Daten extrahieren
+    const managedServer = services.find(svc => svc.key === 'managed-server');
+    const managedServerPackages = managedServer?.packages || [];
+    const managedServerOptions = managedServer?.options || [];
 
     function renderTab() {
         switch (tab) {
@@ -71,9 +78,12 @@ export default function DashboardPage() {
                             <h2 className="text-3xl font-bold mb-8 text-gray-900">Managed Server &gt; Version 1.0</h2>
                             <ManagedServicesTable
                                 serviceName="Managed Server 1.0"
-                                features={managedServerV1Features}
-                                prices={managedServerV1Prices}
+                                packages={managedServerPackages}
                             />
+                            <ManagedServerOptionsTable
+                                options={managedServerOptions}
+                            />
+
                             <button
                                 className="mt-6 px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded font-semibold shadow"
                                 onClick={() => setSelectedVersion(null)}
