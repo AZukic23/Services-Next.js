@@ -1,7 +1,7 @@
 // managedServerV1.ts
 
 export type ManagedServerPackage = {
-    name: "Bronze" | "Silber" | "Gold";
+    name: string;
     features: {
         webServiceStatus: boolean;
         remoteSoftware: boolean;

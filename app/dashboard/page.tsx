@@ -6,7 +6,6 @@ import { Sidebar } from '../components/Sidebar';
 import MitarbeiterTab from '../components/MitarbeiterTab';
 import KundenTab from '../components/KundenTab';
 import LeistungenTab from '../components/LeistungenTab';
-import ManagedTab from '../components/ManagedTab';
 import WelcomeTab from "../components/WelcomeTab";
 import { ManagedServicesTable } from "../components/ManagedServicesTable";
 import { ManagedServicesOverview } from "../components/ManagedServicesOverview";
